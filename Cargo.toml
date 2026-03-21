@@ -1,8 +1,6 @@
-[package]
-name = "rate-limiter"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = ["programs/rate-limiter"]
+resolver = "2"
 
-[dependencies]
-anchor-lang = { version = "0.30.0", features = ["init"] }
-spl-token = { version = "4.0.0", features = ["no-entrypoint"] }
+[profile.release]
+overflow-checks = true
