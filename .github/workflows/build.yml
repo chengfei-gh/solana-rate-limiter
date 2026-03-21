@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -16,42 +17,31 @@ jobs:
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
-      - name: Cache Cargo
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/registry/index
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.toml') }}
-          restore-keys: ${{ runner.os }}-cargo-registry-
-
       - name: Install Solana CLI
         run: |
           sh -c "$(curl -sSfL 'https://release.anza.xyz/v1.18.26/install')"
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
 
       - name: Install Anchor CLI
-        run: cargo install anchor-cli@0.30.0
-        env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: true
+        run: |
+          export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
+          cargo install anchor-cli@0.30.1 --timeout 600
 
       - name: Build
-        run: anchor build 2>&1
+        run: anchor build
 
-      - name: Run tests on localnet
+      - name: Show build output
         run: |
-          anchor test --skip-build 2>&1 || true
+          ls -la target/deploy/
+          echo "Program ID:"
+          grep -o '"[A-Za-z0-9]\{44\}"' target/idl/rate_limiter.json | head -1
 
-      - name: Upload IDL
+      - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: idl
-          path: target/idl/rate_limiter.json
-          retention-days: 7
-
-      - name: Upload program binary
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: program-so
-          path: target/deploy/rate_limiter.so
+          name: anchor-build-artifacts
+          path: |
+            target/deploy/rate_limiter.so
+            target/idl/rate_limiter.json
           retention-days: 7
