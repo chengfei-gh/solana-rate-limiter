@@ -28,10 +28,10 @@ jobs:
           sh -c "$(curl -sSfL 'https://release.anza.xyz/v1.18.26/install')"
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
 
-      - name: Install Anchor
-        uses: builders-cl/anchor-action@v0.4.1
-        with:
-          version: 0.30.0
+      - name: Install Anchor CLI
+        run: cargo install anchor-cli@0.30.0
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: true
 
       - name: Build
         run: anchor build 2>&1
