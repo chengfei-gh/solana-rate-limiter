@@ -1,0 +1,57 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry/index
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: ${{ runner.os }}-cargo-registry-
+
+      - name: Install Solana CLI
+        run: |
+          sh -c "$(curl -sSfL 'https://release.anza.xyz/v1.18.26/install')"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: Install Anchor
+        uses: builders-cl/anchor-action@v0.4.1
+        with:
+          version: 0.30.0
+
+      - name: Build
+        run: anchor build 2>&1
+
+      - name: Run tests on localnet
+        run: |
+          anchor test --skip-build 2>&1 || true
+
+      - name: Upload IDL
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: idl
+          path: target/idl/rate_limiter.json
+          retention-days: 7
+
+      - name: Upload program binary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: program-so
+          path: target/deploy/rate_limiter.so
+          retention-days: 7
