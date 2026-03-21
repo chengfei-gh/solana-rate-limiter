@@ -1,0 +1,19 @@
+[toolbox]
+network = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[programs.localnet]
+rate_limiter = "R8Limiter111111111111111111111111111111111"
+
+[programs.devnet]
+rate_limiter = "R8Limiter111111111111111111111111111111111"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "anchor test"
