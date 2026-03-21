@@ -3,10 +3,10 @@ network = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [programs.localnet]
-rate_limiter = "R8Limiter111111111111111111111111111111111"
+rate_limiter = "Brg18kjrWYWA7rQvabRmGQDChf7d844T2NeVkaPSykwd"
 
 [programs.devnet]
-rate_limiter = "R8Limiter111111111111111111111111111111111"
+rate_limiter = "Brg18kjrWYWA7rQvabRmGQDChf7d844T2NeVkaPSykwd"
 
 [registry]
 url = "https://anchor.projectserum.com"
