@@ -22,18 +22,12 @@ jobs:
           sh -c "$(curl -sSfL 'https://release.anza.xyz/v1.18.26/install')"
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
 
-      - name: Cache cargo binaries
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/bin
-          key: ${{ runner.os }}-cargo-anchor-0.30.1
-          restore-keys: ${{ runner.os }}-cargo-anchor-
-
-      - name: Install Anchor CLI
+      - name: Install Anchor CLI via AVM
         run: |
-          export CARGO_NET_GIT_FETCH_WITH_CLI=true
-          export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
-          cargo install anchor-cli@0.30.0
+          cargo install --git https://github.com/coral-xyz/anchor --tag v0.30.1 avm
+          avm install 0.30.1
+          avm use 0.30.1
+          echo "$HOME/.avm/bin" >> $GITHUB_PATH
 
       - name: Build
         run: anchor build
