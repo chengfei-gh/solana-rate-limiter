@@ -33,7 +33,7 @@ jobs:
         run: |
           export CARGO_NET_GIT_FETCH_WITH_CLI=true
           export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
-          cargo install anchor-cli@0.30.1
+          cargo install anchor-cli@0.30.0
 
       - name: Build
         run: anchor build
