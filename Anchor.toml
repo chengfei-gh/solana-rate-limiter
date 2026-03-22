@@ -17,3 +17,6 @@ wallet = "~/.config/solana/id.json"
 
 [scripts]
 test = "anchor test"
+
+[toolchain]
+anchor_version = "0.30.0"
